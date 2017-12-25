@@ -1,0 +1,127 @@
+body{
+    background: #EEEEEE;
+    padding-top: 70px;
+}
+.lr li{
+    margin-left: 5px;
+}
+.mydt{
+    font-size: 20px;
+}
+
+.list-group-item dl dd{
+    padding-right: 50px;
+}
+.comment{
+    margin-right: -15px;
+    color: #bbb;
+}
+.list-group-item:hover{
+    background-color: rgb(239,227,224);
+
+}
+.new{
+    padding: 18px;
+    text-align: center;
+    margin-bottom: 50px;
+    background-color:rgb(197,200,215);
+}
+.err{
+    display: none;
+}
+#captchaOperation{
+    text-align: center;
+}
+.info{
+    font-size: 12px;
+    color: #BBBBBB;
+    margin-left: 55%;
+}
+.response{
+    color: #BBBBBB;
+}
+.icon i{
+    font-size: 22px;
+    color: rgb(62,134,244);
+    margin-left: 10px;
+}
+footer{
+    border: 1px solid #000;
+    height: 500px;
+    background-color:white;
+}
+.top-link{
+    color:white !important;
+}
+.top-link:hover{
+    color: rgb(103,190,30) !important;
+}
+.postContent{
+    width: 80%;
+    height: 80px;
+    overflow: hidden;
+    display: block;
+    text-indent: 2em;
+
+}
+.head-pic-index .user-head{
+    height: 36px;
+    width: 36px;
+    margin-right: 10px;
+    margin-top: -8px;
+
+}
+
+.head-pic-index a{
+    width: 72%;
+    height: 50px;
+}
+.rightUL{
+    display: none;
+    position: absolute;
+    right: 6px;
+    top: 50px;
+    font-size: 12px;
+    text-align: center;
+}
+.head-pic-index:hover ul{
+    display: block;
+}
+.rightUL li:hover{
+
+    background-color:rgb(223,240,216);
+}
+#login_err{
+    color: #eb6716;
+    display: none;
+}
+#null_err{
+    color: #eb6716;
+    display: none;
+}
+#register-null{
+    display: none;
+}
+#captchaOperationErr{
+    display: none;
+}
+.edit{
+    width:70%;
+}
+.post-title{
+    width: 75%;
+    margin-left: 1%;
+}
+.title-label{
+    font-size: 18px;
+    padding-top: 4px;
+}
+
+#summernote img{
+    max-width: 500px;
+    max-height: 600px;
+}
+
+
+
+

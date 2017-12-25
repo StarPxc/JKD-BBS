@@ -1,0 +1,13 @@
+body{
+	margin-top: 50px;
+	background-color: lightgoldenrodyellow;
+}
+.my-left{
+	margin-top: 15px;
+	background-color: lightgoldenrodyellow;
+	height: 800px;
+	box-shadow: 5px 0 10px wheat;
+}
+.my-right{
+	height: 800px;
+}

@@ -1,0 +1,58 @@
+body{
+	padding-top: 70px;
+	background-color: rgb(217,237,247);
+}
+.top-link{
+	color:white !important;
+	}
+.top-link:hover{
+		color: rgb(103,190,30) !important;
+	}
+.cot1{
+	width: 100%;
+	height: 300px;
+	background: url(../img/caoyuan.jpg) no-repeat;
+	margin-top: -20px;
+	background-size: cover;
+	overflow: hidden;
+}
+.my-thumbnail{
+	background-color: transparent;
+	border: none;
+	margin-top: 50px;
+	
+	
+}
+.my-caption{
+	margin-top: 15px;
+	text-align: center; 
+
+}
+.cot2{
+	margin-top: 15px;
+}
+.title-sapn{
+	margin-left: 15px;
+	display: block;
+	border-left: 5px solid purple;
+	font-size: 18px;
+	padding-left: 15px;
+	
+}
+.hr{
+	height: 2px;
+	width: 90%;
+	border: 1px solid #B2DBA1;
+	margin-left: 30px;
+	margin-top: 5px;
+}
+
+.my-huifu{
+	margin-top: 35px;
+}
+#selfIntroduction{
+	border-bottom: 1px solid #000;
+	padding: 15px;
+	margin-left: 15px;
+	width: 80%;
+}

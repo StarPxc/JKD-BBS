@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pxc.reply.dao.ReplyMapper" >
+  <resultMap id="BaseResultMap" type="com.pxc.reply.bean.Reply" >
+    <id column="r_id" property="id" jdbcType="INTEGER" />
+    <result column="reply_post_id" property="replyPostId" jdbcType="INTEGER" />
+    <result column="reply_user_id" property="replyUserId" jdbcType="VARCHAR" />
+    <result column="reply_content" property="replyContent" jdbcType="VARCHAR" />
+    <result column="reply_user_name" property="replyUserName" jdbcType="VARCHAR" />
+    <result column="reply_create_time" property="replyCreateTime" jdbcType="TIMESTAMP" />
+    <association property="user" javaType="com.pxc.user.bean.User">
+      <id property="id" column="id"/>
+      <result property="username" column="username"/>
+      <result property="password" column="password"/>
+      <result property="email" column="email"/>
+      <result property="selfIntroduction" column="self_introduction"/>
+      <result property="headPic" column="head_pic"/>
+      <result property="createPostCount" column="create_post_count"/>
+    </association>
+    <association property="post" javaType="com.pxc.post.bean.Post">
+      <id column="p_id" property="id" jdbcType="INTEGER" />
+      <result column="post_title" property="postTitle" jdbcType="VARCHAR" />
+      <result column="post_view_count" property="postViewCount" jdbcType="INTEGER" />
+      <result column="post_reply_count" property="postReplyCount" jdbcType="INTEGER" />
+      <result column="post_create_time" property="postCreateTime" jdbcType="TIMESTAMP" />
+      <result column="post_update_time" property="postUpdateTime" jdbcType="TIMESTAMP" />
+      <result column="user_id" property="userId" jdbcType="INTEGER" />
+      <result column="post_content" property="postContent" jdbcType="VARCHAR" />
+
+    </association>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, reply_post_id, relay_user_id, reply_content, reply_create_time,reply_user_name
+  </sql>
+
+  <select id="selectLastedItem" resultMap="BaseResultMap">
+    SELECT
+	r.id r_id,
+	r.reply_content,
+	r.reply_create_time,
+	r.reply_post_id,
+	r.reply_user_id,
+	p.id p_id,
+	p.post_title,
+	p.post_view_count,
+	p.post_reply_count,
+	p.post_create_time,
+	p.post_update_time,
+	p.user_id,
+	p.post_content,
+	u.username,
+	u.head_pic,
+	u.email,
+	u.self_introduction,
+	u.`password`,
+	u.create_post_count
+FROM
+	reply r
+LEFT JOIN post p ON p.id = r.reply_post_id
+LEFT JOIN `user` u ON u.id = r.reply_user_id
+ORDER BY
+	r.id DESC
+LIMIT 0,
+ 3
+  </select>
+  <select id="selectReplyByPostId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+       SELECT
+    p.id p_id,
+    post_title,
+    post_view_count,
+    post_reply_count,
+    post_create_time,
+    post_update_time,
+    user_id,
+    post_content,
+    r.id r_id,
+    r.reply_content,
+    u.username,
+    u.head_pic,
+    u.email,
+    u.self_introduction,
+    u.password,
+    u.create_post_count
+    FROM
+    reply r
+    LEFT JOIN post p ON p.id = r.reply_post_id
+    LEFT JOIN `user` u ON u.id =r.reply_user_id
+WHERE p.id=#{id,jdbcType=INTEGER}
+ORDER BY r.id DESC
+  </select>
+
+  <delete id="deleteByPostId" parameterType="java.lang.Integer" >
+    delete from reply
+    where reply_post_id = #{pId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from reply
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.pxc.reply.bean.Reply" >
+    insert into reply (id, reply_post_id, relay_user_id,
+      reply_content, relay_create_time)
+    values (#{id,jdbcType=INTEGER}, #{replyPostId,jdbcType=INTEGER}, #{replyUserId,jdbcType=VARCHAR},
+      #{replyContent,jdbcType=VARCHAR}, #{replyCreateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.pxc.reply.bean.Reply" >
+    insert into reply
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="replyPostId != null" >
+        reply_post_id,
+      </if>
+      <if test="replyUserId != null" >
+        reply_user_id,
+      </if>
+      <if test="replyContent != null" >
+        reply_content,
+      </if>
+      <if test="replyCreateTime != null" >
+        reply_create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="replyPostId != null" >
+        #{replyPostId,jdbcType=INTEGER},
+      </if>
+      <if test="replyUserId != null" >
+        #{replyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="replyContent != null" >
+        #{replyContent,jdbcType=VARCHAR},
+      </if>
+      <if test="replyCreateTime != null" >
+        #{replyCreateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.pxc.reply.bean.Reply" >
+    update reply
+    <set >
+      <if test="replyPostId != null" >
+        reply_post_id = #{replyPostId,jdbcType=INTEGER},
+      </if>
+      <if test="replyUserId != null" >
+        relay_user_id = #{replyUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="replyContent != null" >
+        reply_content = #{replyContent,jdbcType=VARCHAR},
+      </if>
+      <if test="replyCreateTime != null" >
+        relay_create_time = #{replyCreateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.pxc.reply.bean.Reply" >
+    update reply
+    set reply_post_id = #{replyPostId,jdbcType=INTEGER},
+      relay_user_id = #{replyUserId,jdbcType=VARCHAR},
+      reply_content = #{replyContent,jdbcType=VARCHAR},
+      relay_create_time = #{replyCreateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

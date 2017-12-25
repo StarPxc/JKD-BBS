@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pxc.user.dao.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.pxc.user.bean.User" >
+    <id column="u_id" property="id" jdbcType="INTEGER" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="self_introduction" property="selfIntroduction" jdbcType="VARCHAR" />
+    <result column="head_pic" property="headPic" jdbcType="VARCHAR" />
+    <result property="createPostCount" column="create_post_count"/>
+    <collection property="replies" ofType="com.pxc.reply.bean.Reply">
+      <id property="id" column="r_id"/>
+      <result property="replyPostId" column="reply_post_id"/>
+      <result property="replyUserName" column="reply_user_name"/>
+      <result property="replyContent" column="reply_content"/>
+      <result property="replyCreateTime" column="reply_create_time"/>
+    </collection>
+    <collection property="posts" ofType="com.pxc.post.bean.Post">
+      <id column="p_id" property="id" jdbcType="INTEGER" />
+      <result column="post_title" property="postTitle" jdbcType="VARCHAR" />
+      <result column="post_view_count" property="postViewCount" jdbcType="INTEGER" />
+      <result column="post_reply_count" property="postReplyCount" jdbcType="INTEGER" />
+      <result column="post_create_time" property="postCreateTime" jdbcType="TIMESTAMP" />
+      <result column="post_update_time" property="postUpdateTime" jdbcType="TIMESTAMP" />
+      <result column="user_id" property="userId" jdbcType="INTEGER" />
+    </collection>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, username, password, email, self_introduction, head_pic
+  </sql>
+
+  <select id="selectUserWithLastPostsById" resultMap="BaseResultMap" >
+    SELECT
+    u.id u_id,
+    u.username,
+    u.password,
+    u.email,
+    u.self_introduction,
+    u.head_pic,
+    u.create_post_count,
+    p.id p_id,
+    post_title
+    FROM
+    user u
+    LEFT JOIN post p ON u.id = p.user_id
+    where u.id=#{id}
+    LIMIT 0,3
+
+  </select>
+  <select id="selectUserByUsernameAndPassword" resultMap="BaseResultMap" >
+    SELECT
+	u.id u_id,
+	u.username,
+	u.password,
+	u.email,
+	u.self_introduction,
+	u.head_pic,
+	u.create_post_count,
+	p.id p_id,
+	post_title,
+	post_view_count,
+	post_reply_count,
+	post_create_time,
+	post_update_time,
+	user_id,
+	post_content,
+	r.id r_id,
+	r.reply_content
+FROM
+	user u
+LEFT JOIN reply r ON u.id = r.reply_user_id
+LEFT JOIN post p ON u.id = p.user_id
+    where username=#{0} AND password=#{1}
+  </select>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from user
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from user
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.pxc.user.bean.User" >
+    insert into user (id, username, password, 
+      email, self_introduction, head_pic
+      )
+    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{selfIntroduction,jdbcType=VARCHAR}, #{headPic,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.pxc.user.bean.User" >
+    insert into user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="selfIntroduction != null" >
+        self_introduction,
+      </if>
+      <if test="headPic != null" >
+        head_pic,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="selfIntroduction != null" >
+        #{selfIntroduction,jdbcType=VARCHAR},
+      </if>
+      <if test="headPic != null" >
+        #{headPic,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.pxc.user.bean.User" >
+    update user
+    <set >
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="selfIntroduction != null" >
+        self_introduction = #{selfIntroduction,jdbcType=VARCHAR},
+      </if>
+      <if test="headPic != null" >
+        head_pic = #{headPic,jdbcType=VARCHAR},
+      </if>
+      <if test="createPostCount != null" >
+        create_post_count = #{createPostCount},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.pxc.user.bean.User" >
+    update user
+    set username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      self_introduction = #{selfIntroduction,jdbcType=VARCHAR},
+      head_pic = #{headPic,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

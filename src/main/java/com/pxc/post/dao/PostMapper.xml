@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pxc.post.dao.PostMapper">
+    <resultMap id="BaseResultMap" type="com.pxc.post.bean.Post">
+        <id column="p_id" property="id" jdbcType="INTEGER"/>
+        <result column="post_title" property="postTitle" jdbcType="VARCHAR"/>
+        <result column="post_view_count" property="postViewCount" jdbcType="INTEGER"/>
+        <result column="post_reply_count" property="postReplyCount" jdbcType="INTEGER"/>
+        <result column="post_create_time" property="postCreateTime" jdbcType="TIMESTAMP"/>
+        <result column="post_update_time" property="postUpdateTime" jdbcType="TIMESTAMP"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+
+        <association property="user" javaType="com.pxc.user.bean.User">
+            <id property="id" column="u_id"/>
+            <result property="username" column="username"/>
+            <result property="password" column="password"/>
+            <result property="email" column="email"/>
+            <result property="selfIntroduction" column="self_introduction"/>
+            <result property="headPic" column="head_pic"/>
+            <result property="createPostCount" column="create_post_count"/>
+        </association>
+        <collection property="replies" ofType="com.pxc.reply.bean.Reply">
+            <id property="id" column="r_id"/>
+            <result property="replyPostId" column="reply_post_id"/>
+            <result property="replyUserName" column="reply_user_name"/>
+            <result property="replyContent" column="reply_content"/>
+            <result property="replyCreateTime" column="reply_create_time"/>
+        </collection>
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.pxc.post.bean.Post" extends="BaseResultMap">
+        <result column="post_content" property="postContent" jdbcType="LONGVARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, post_title, post_view_count, post_reply_count, post_create_time, post_update_time, 
+    user_id
+  </sql>
+    <sql id="Blob_Column_List">
+    post_content
+  </sql>
+
+    <select id="selectHostPosts" resultMap="ResultMapWithBLOBs">
+    SELECT
+    p.id p_id,
+    post_title,
+    post_view_count,
+    post_reply_count,
+    post_create_time,
+    post_update_time,
+    user_id,
+    post_content,
+    u.username,
+    u.password,
+    u.create_post_count,
+    u.head_pic
+    FROM
+    post p
+    LEFT JOIN `user` u ON u.id = p.user_id
+    ORDER BY p.post_view_count DESC
+    LIMIT 0,3
+    </select>
+
+    <select id="selectAllPosts" resultMap="ResultMapWithBLOBs">
+SELECT
+	p.id p_id,
+	post_title,
+	post_view_count,
+	post_reply_count,
+	post_create_time,
+	post_update_time,
+	user_id,
+	post_content,
+	r.id r_id,
+	r.reply_content,
+	u.username,
+	u.password,
+	u.create_post_count
+FROM
+	post p
+LEFT JOIN reply r ON p.id = r.reply_post_id
+LEFT JOIN `user` u ON u.id = p.user_id
+ORDER BY p.id DESC
+LIMIT #{0},#{1}
+
+  </select>
+    <select id="searchPosts" resultMap="ResultMapWithBLOBs">
+        SELECT
+        p.id p_id,
+        post_title,
+        post_view_count,
+        post_reply_count,
+        post_create_time,
+        post_update_time,
+        user_id,
+        post_content
+        FROM
+        post p WHERE post_title LIKE CONCAT(CONCAT('%', #{postTitle}), '%');
+
+    </select>
+
+    <select id="selectAllPostsNum" resultType="java.lang.Integer">
+    SELECT COUNT(*) FROM post
+  </select>
+
+    <select id="selectPostById" resultMap="ResultMapWithBLOBs">
+    SELECT
+    p.id p_id,
+    post_title,
+    post_view_count,
+    post_reply_count,
+    post_create_time,
+    post_update_time,
+    user_id,
+    post_content,
+    r.id r_id,
+    r.reply_content,
+    u.id u_id,
+    u.username,
+    u.password,
+    u.head_pic,
+    u.self_introduction,
+    u.email,
+    u.create_post_count
+    FROM
+    post p
+    LEFT JOIN reply r ON p.id = r.reply_post_id
+    LEFT JOIN `user` u ON u.id = p.user_id
+     where p.id = #{id,jdbcType=INTEGER}
+
+
+  </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from post
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+    <insert id="insert" parameterType="com.pxc.post.bean.Post">
+    insert into post (id, post_title, post_view_count, 
+      post_reply_count, post_create_time, post_update_time, 
+      user_id, post_content)
+    values (#{id,jdbcType=INTEGER}, #{postTitle,jdbcType=VARCHAR}, #{postViewCount,jdbcType=INTEGER}, 
+      #{postReplyCount,jdbcType=INTEGER}, #{postCreateTime,jdbcType=TIMESTAMP}, #{postUpdateTime,jdbcType=TIMESTAMP}, 
+      #{userId,jdbcType=INTEGER}, #{postContent,jdbcType=LONGVARCHAR})
+  </insert>
+
+    <insert id="insertSelective" parameterType="com.pxc.post.bean.Post">
+        insert into post
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="postTitle != null">
+                post_title,
+            </if>
+            <if test="postViewCount != null">
+                post_view_count,
+            </if>
+            <if test="postReplyCount != null">
+                post_reply_count,
+            </if>
+            <if test="postCreateTime != null">
+                post_create_time,
+            </if>
+            <if test="postUpdateTime != null">
+                post_update_time,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="postContent != null">
+                post_content,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="postTitle != null">
+                #{postTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="postViewCount != null">
+                #{postViewCount,jdbcType=INTEGER},
+            </if>
+            <if test="postReplyCount != null">
+                #{postReplyCount,jdbcType=INTEGER},
+            </if>
+            <if test="postCreateTime != null">
+                #{postCreateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="postUpdateTime != null">
+                #{postUpdateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="postContent != null">
+                #{postContent,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.pxc.post.bean.Post">
+        update post
+        <set>
+            <if test="postTitle != null">
+                post_title = #{postTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="postViewCount != null">
+                post_view_count = #{postViewCount,jdbcType=INTEGER},
+            </if>
+            <if test="postReplyCount != null">
+                post_reply_count = #{postReplyCount,jdbcType=INTEGER},
+            </if>
+            <if test="postCreateTime != null">
+                post_create_time = #{postCreateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="postUpdateTime != null">
+                post_update_time = #{postUpdateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="postContent != null">
+                post_content = #{postContent,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.pxc.post.bean.Post">
+    update post
+    set post_title = #{postTitle,jdbcType=VARCHAR},
+      post_view_count = #{postViewCount,jdbcType=INTEGER},
+      post_reply_count = #{postReplyCount,jdbcType=INTEGER},
+      post_create_time = #{postCreateTime,jdbcType=TIMESTAMP},
+      post_update_time = #{postUpdateTime,jdbcType=TIMESTAMP},
+      user_id = #{userId,jdbcType=INTEGER},
+      post_content = #{postContent,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.pxc.post.bean.Post">
+    update post
+    set post_title = #{postTitle,jdbcType=VARCHAR},
+      post_view_count = #{postViewCount,jdbcType=INTEGER},
+      post_reply_count = #{postReplyCount,jdbcType=INTEGER},
+      post_create_time = #{postCreateTime,jdbcType=TIMESTAMP},
+      post_update_time = #{postUpdateTime,jdbcType=TIMESTAMP},
+      user_id = #{userId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
